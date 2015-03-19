@@ -1,0 +1,16 @@
+queue:
+  type: sqs
+  access_key_id: AAAAAAAAAAAAAA
+  secret_access_key: BBBBBBBBBB
+  url: https://sqs.ap-northeast-1.amazonaws.com/999999999999/test_queue
+  visibility_timeout: 10
+  region: ap-northeast-1
+  buffer_timeout: 2s
+  max_concurrency: 10
+runner:
+  type: http_proxy
+  url: http://127.0.0.1:5000
+  timeout: 2s
+  concurrency: 3
+  default_retry_after: 5
+log_level: debug

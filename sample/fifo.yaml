@@ -1,0 +1,9 @@
+queue:
+  type: fifo
+  path: /tmp/queue
+runner:
+  type: http_proxy
+  url: http://127.0.0.1:5000
+  timeout: 2s
+  concurrency: 3
+log_level: info

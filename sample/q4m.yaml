@@ -1,0 +1,10 @@
+queue:
+  type: q4m
+  dsn: root@tcp(127.0.0.1:3306)/reprow_test
+  table: test_queue
+runner:
+  type: http_proxy
+  url: http://127.0.0.1:5000
+  concurrency: 3
+  timeout: 2s
+log_level: info
