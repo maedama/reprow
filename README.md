@@ -53,8 +53,11 @@ Currently it provides http proxy runners only.
 ## Examples
 ### Running sample application server
 To illustrate how it works, there is a sample worker server using Perl.
-Worker server should receive job with HTTP and if job is successful, it should return with HTTP 200 Status code,
-If job fails it should return with HTTP 500 Status code.
+* https://github.com/maedama/reprow/blob/master/sample/worker.psgi
+
+Worker server should receive job with HTTP and if job is successful, it should return with HTTP 200 Status code.
+
+When it fails it should return with HTTP 500 Status code.
 
 Optionally SQS backend supports retry after, which in this case application servre may return Retry-After Header specifying how many seconds, it should take for job to be reprocessed.
 
