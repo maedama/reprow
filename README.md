@@ -19,7 +19,7 @@ By doing so it can provide:
 * Language/Queue backend(i.e SQS) independent frameworks for job queue workers
 * Using standard protocols (HTTP) to work well with soa/microservice architecture
 
-By using reprow, job workers would very similar HTTP Worker that serves client request.
+By using reprow, job workers architecture would look very similar to that of HTTP Worker serving client request.
 ```
 	JobBackend                          reprow                         Application
 	               <- pulls a job
