@@ -6,21 +6,27 @@ Message queue architecture is becoming even more common with  soa/microservice a
 
 But current implementations of Job workers have following problems
  * Implementations/Protocol/framework has programming language x backend(Redis/SQS/Q4M etc)  variations
- * It enforces application to manage pull triggered workers(i.e Workers) and push based workers(i.e API) at the same time.
+ * It enforces application to manage pull triggered workers(i.e Workers) and push triggered workers(i.e API) at the same time.
 
-Ideally, life cycle of job management(Pull or Push) should be done in reverse proxy layer and not in application layer.
 
-Application should focus on executing each tasks and report reverse proxy if it success/failed providing some more informations on failure(i.e retry after).
+Unlike most of worker frameworks, reprow work as a proxy server for job message.
 
-Reprow provides reverse proxy layer for pull based job workers to allows us to have these architecture as followings
+Instead of listening to http socket and reverse proxying it to application server like nginx,
+it pulls job from backend queue and  proxies it to application server with HTTP.
 
+By doing so it can provider
+
+* Language/Queue backend(i.e SQS) independent frameworks for job queue workers
+* Using standard protocols (HTTP) to work well with soa/microservice architecture
+
+By using reprow, job workers would very similar HTTP Worker that serves client request.
+```
 	JobBackend                          reprow                         Application
 	               <- pulls a job
 	                                              -> HTTP Proxy
 	                                              <- Returns response
 	               <- abort or ends Job
-
-With the above architecture, application developers can handle both job messages and usual client requests with HTTP API.
+```
 
 # Install
 
@@ -28,9 +34,11 @@ With the above architecture, application developers can handle both job messages
     go get github.com/maedama/reprow/cmd/reprow
 ```
 
+
+
 # Queue Backends
 
-Currently it provides folloing backends
+Reprow has Multiple queue backend implementations. Currently it provides folloing backends
 
 * SQS(http://aws.amazon.com/jp/sqs/)
 * Q4M(https://github.com/q4m/q4m/)
@@ -38,13 +46,17 @@ Currently it provides folloing backends
 
 # Runners
 
-It provides http proxy runners only.
+Reprow has runners that is pluggable. Runner communicates with application server inorder to pass job and retrieve job execution responses.
+Currently it provides http proxy runners only.
 
 
 ## Examples
-### Running worker sample server
+### Running sample application server
+To illustrate how it works, there is a sample worker server using Perl.
+Worker server should receive job with HTTP and if job is successful, it should return with HTTP 200 Status code,
+If job fails it should return with HTTP 500 Status code.
 
-To ilustrate how it works, there is a sample worker server using Perl
+Optionally SQS backend supports retry after, which in this case application servre may return Retry-After Header specifying how many seconds, it should take for job to be reprocessed.
 
 ```
    plackup sample/worker.psgi
@@ -59,13 +71,15 @@ see https://github.com/maedama/reprow/blob/master/sample/sqs.yaml for configurat
 ```
 
 ### Running with q4m as backend
+see https://github.com/maedama/reprow/blob/master/sample/q4m.yaml for configuration
 ```
     reprow -c sample/q4m.yaml
 ```
 
 ### Running with fifo as backend
+This is mainly used as development.
 
-This is mainly used as development
+see https://github.com/maedama/reprow/blob/master/sample/fifo.yaml for configuration
 ```
     mkfifo /tmp/queue
     reprow -c sample/q4m.yaml
@@ -80,6 +94,8 @@ This is mainly used as development
 Install instruction can be seen in official page.
 But if you are using centos q4m can easily be installed by https://github.com/kazeburo/mysetup and test executed like
 ```
-MYSQLD=/usr/local/q4m/libexec/mysqld MYSQL_INSTALL_DB=/usr/local/q4m/bin/mysql_install_db go test -v ./...
+MYSQLD=/usr/local/q4m/libexec/mysqld \
+MYSQL_INSTALL_DB=/usr/local/q4m/bin/mysql_install_db \
+go test -v ./...
 ```
 
