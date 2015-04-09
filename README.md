@@ -14,7 +14,7 @@ Unlike most of worker frameworks, reprow work as a proxy server for job message.
 Instead of listening to http socket and reverse proxying it to application server like nginx,
 it pulls job from backend queue and  proxies it to application server with HTTP.
 
-By doing so it can provider
+By doing so it can provide:
 
 * Language/Queue backend(i.e SQS) independent frameworks for job queue workers
 * Using standard protocols (HTTP) to work well with soa/microservice architecture
