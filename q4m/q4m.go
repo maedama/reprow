@@ -91,7 +91,6 @@ func (q *Q4M) run(outChannel chan reprow.Job) {
 				return
 			}
 
-			//var payload2 Test
 			row = tx.QueryRow(fmt.Sprintf("SELECT * FROM %s", q.config.Table))
 			payload, err := rowToMap(row)
 			if err != nil {
